@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = ["AALLEXXX <alxjy@ya.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiogram = "^3.3.0"
+environs = "^10.3.0"
+sqlalchemy = "^2.0.27"
+aiosqlite = "^0.19.0"
+greenlet = "^3.0.3"
+alembic = "^1.13.1"
+yoomoney = "^0.1.0"
+requests = "^2.31.0"
+apscheduler = "^3.10.4"
+redis = "^5.0.1"
+apscheduler-di = "^0.1.0"
+cloc = "^0.2.5"
+openpyxl = "^3.1.2"
+pytest = "^8.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
