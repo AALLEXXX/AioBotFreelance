@@ -1,5 +1,5 @@
 from aiogram.types import CallbackQuery, Message
-from aiogram import Bot, types
+from aiogram import Bot
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.fsm.context import FSMContext
 from core.database.requests import UserDAO

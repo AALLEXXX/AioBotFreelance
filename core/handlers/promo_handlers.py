@@ -8,7 +8,6 @@ from core.utils.statesPromo import StepsPromo
 from core.database.requests import PromocodeDAO, PurchaseDAO, CourseDAO, UserDAO
 from core.database.models import Course, Promocode
 from datetime import datetime
-from core.keyboards.inline import get_return_builder
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 

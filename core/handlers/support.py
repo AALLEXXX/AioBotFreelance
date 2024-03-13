@@ -1,3 +1,4 @@
+from typing import Tuple
 from aiogram import Bot
 from aiogram.types import Message
 from core.keyboards.inline import get_return_builder
@@ -27,9 +28,9 @@ async def waiting_message_from_user_handler(msg: Message, bot: Bot, state: FSMCo
         return await msg.answer(f'Вопрос нужно отправлять в формате текста. Попробуйте снова')
     username = msg.from_user.username
     user_msg = msg.text 
-    user_chat_id = msg.from_user.id
-    msg_id = msg.message_id
-    admins = await UserDAO.get_chat_id_all_admin()
+    user_chat_id: int = msg.from_user.id
+    msg_id: int = msg.message_id
+    admins: list[Tuple[str]] = await UserDAO.get_chat_id_all_admin()
     print(admins)
     await UserSupportRequestDAO.add(user_id=user_chat_id, question=user_msg, date=datetime.now())
     if len(admins) > 0: 
