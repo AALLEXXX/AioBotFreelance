@@ -1,6 +1,7 @@
 input
 __pycache__/
 users_excel_files/
+purchases_excel_files/
 core/database/TgBotDb.sqlite3
 youmoney.py
 content
