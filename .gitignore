@@ -4,3 +4,4 @@ users_excel_files/
 core/database/TgBotDb.sqlite3
 youmoney.py
 content
+.DS_Store
