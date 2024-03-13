@@ -1,4 +1,7 @@
-from aiogram.types import Message
+from pickletools import StackObject
+from re import S
+from aiogram.types import FSInputFile, InputFile, Message
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from core.database.models import Course
 from core.keyboards.inline import get_board_for_FS_handler
 from core.database.requests import CourseDAO
@@ -26,14 +29,17 @@ START_MESSAGE = """💵💵💵 КАК ЗАРАБАТЫВАТЬ с компан�
 👇👇👇"""
 
 #/start
-async def first_user_start_handler(msg: Message):
+async def first_user_start_handler(msg: Message) -> None:
 
     course_models: list[Course] = await CourseDAO.get_all_by_params()
     courses_names: List[Tuple[str]] = [(i.name) for i in course_models]
 
 
-    key_builder = get_board_for_FS_handler(courses_names)
+    key_builder: InlineKeyboardBuilder = get_board_for_FS_handler(courses_names)
     key_builder.button(text='Вернуться в главное меню ⬅️',
                         callback_data='return')
     key_builder.adjust(1)
-    await msg.answer(text=START_MESSAGE, reply_markup=key_builder.as_markup())
+
+    photo = FSInputFile('core/content/images/start_img.jpg')
+
+    await msg.answer_photo(photo=photo, caption=START_MESSAGE, reply_markup=key_builder.as_markup())
