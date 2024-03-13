@@ -1,3 +1,4 @@
+from sqlite3 import IntegrityError
 from aiogram.types import CallbackQuery, Message
 from aiogram import Bot
 from aiogram.enums.parse_mode import ParseMode
@@ -22,7 +23,7 @@ def valid_fullname(full_name: str):
 def validate_phone_number(phone_number):
     phone_number = phone_number.replace(" ", "")
 
-    pattern = re.compile(r"^(\+7|8|7)\d{10}$")
+    pattern = re.compile(r"^(8)\d{10}$")
 
     return bool(pattern.match(phone_number))
 
@@ -76,7 +77,7 @@ async def handler_accept_but(call: CallbackQuery, bot: Bot, state: FSMContext):
         await state.set_state(StepsRegister.GET_PHONE)
         await msg.answer(
             "ФИО принято ✅\nТеперь отправьте номер телефона 📲 для завершения регистрации 🔚\n"
-            'Формат номера телефона "+7 ххх ххх хх хх" или "8 ххх ххх хх хх"'
+            'Формат номера телефона "8 ххх ххх хх хх"'
         )
 
     elif state_name == "GET_PHONE":
@@ -88,18 +89,22 @@ async def handler_accept_but(call: CallbackQuery, bot: Bot, state: FSMContext):
         number = user_state_data["GET_PHONE"]
         chat_id = call.from_user.id
         registration_date = datetime.now()
+        try:
+            await UserDAO.update_by_id(
+                model_id=chat_id,
+                first_name=first_name,
+                last_name=last_name,
+                middle_name=middle_name,
+                phone_number=number,
+                date_registration=registration_date,
+            )
 
-        await UserDAO.update_by_id(
-            model_id=chat_id,
-            first_name=first_name,
-            last_name=last_name,
-            middle_name=middle_name,
-            phone_number=number,
-            date_registration=registration_date,
-        )
+        except Exception:
+            return await msg.answer(
+                text="Такой номер уже зарегистрирован. Попробуйте снова"
+            )
 
         await msg.answer(text="Номер принят ✅.\nРегистрация успешно завершена 🎉")
-        await get_menu(msg)
         await state.clear()
 
 
