@@ -1,3 +1,4 @@
+import aiogram
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram import Bot
@@ -8,8 +9,7 @@ from core.handlers.first_start_handler import first_user_start_handler
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import datetime as dt 
 from core.database.requests import CourseDAO
-
-
+from aiogram.exceptions import TelegramBadRequest
 
 
 #call.data - info
@@ -24,9 +24,13 @@ async def get_info_handler(call: CallbackQuery, bot: Bot):
 async def back_to_menu_button_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
     msg_id = call.message.message_id
     chat_id = call.message.chat.id
-    await bot.delete_message(chat_id, msg_id)
-    await state.clear()
-    await get_menu(call.message)
+    try: 
+        await bot.delete_message(chat_id, msg_id)    
+    except TelegramBadRequest:
+        pass 
+    finally:
+        await state.clear()
+        await get_menu(call.message)
 
 
 #call.data - course + course name 
