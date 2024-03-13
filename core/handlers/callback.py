@@ -1,13 +1,11 @@
-import aiogram
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram import Bot
 from core.database.models import Course
-from core.keyboards.inline import get_but_for_start_registration, get_return_builder, get_return_to_start_massage_but
+from core.keyboards.inline import get_but_for_start_registration, get_return_to_start_massage_but
 from core.handlers.basic import get_menu
 from core.handlers.first_start_handler import first_user_start_handler
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import datetime as dt 
 from core.database.requests import CourseDAO
 from aiogram.exceptions import TelegramBadRequest
 
