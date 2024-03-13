@@ -5,4 +5,5 @@ purchases_excel_files/
 core/database/TgBotDb.sqlite3
 youmoney.py
 content
+migrations/
 .DS_Store
