@@ -1,12 +1,13 @@
 from pickletools import StackObject
 from re import S
+import aiogram
 from aiogram.types import FSInputFile, InputFile, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from core.database.models import Course
 from core.keyboards.inline import get_board_for_FS_handler
 from core.database.requests import CourseDAO
 from typing import List, Tuple 
-
+from aiogram.exceptions import TelegramNetworkError
 
 
 START_MESSAGE = """💵💵💵 КАК ЗАРАБАТЫВАТЬ с компанией FOHOW
@@ -41,5 +42,8 @@ async def first_user_start_handler(msg: Message) -> None:
     key_builder.adjust(1)
 
     photo = FSInputFile('core/content/images/start_img.jpg')
-
-    await msg.answer_photo(photo=photo, caption=START_MESSAGE, reply_markup=key_builder.as_markup())
+    try:
+        await msg.answer_photo(photo=photo, caption=START_MESSAGE, reply_markup=key_builder.as_markup())
+    except TelegramNetworkError:
+        await msg.answer(text=START_MESSAGE, reply_markup=key_builder.as_markup())
+    
