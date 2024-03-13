@@ -39,10 +39,6 @@ class UserDAO(BaseDAO):
             for course in courses_not_purchased:
                 courses.append(course.name)
             return courses
-    
-    @classmethod
-    async def get_user_role():
-        pass
 
     @classmethod
     async def get_chat_id_all_admin(cls) -> list[Tuple[str]]:
