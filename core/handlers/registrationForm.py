@@ -1,11 +1,9 @@
-from sqlite3 import IntegrityError
 from aiogram.types import CallbackQuery, Message
 from aiogram import Bot
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.fsm.context import FSMContext
 from core.database.requests import UserDAO
 from core.utils.statesRegister import StepsRegister
-from core.handlers.basic import get_menu
 from datetime import datetime
 from core.keyboards.inline import get_state_manager_but
 
@@ -88,7 +86,7 @@ async def handler_accept_but(call: CallbackQuery, bot: Bot, state: FSMContext):
 
         number = user_state_data["GET_PHONE"]
         chat_id = call.from_user.id
-        registration_date = datetime.now()
+        registration_date = datetime.now().time().strftime("%H:%M:%S")
         try:
             await UserDAO.update_by_id(
                 model_id=chat_id,

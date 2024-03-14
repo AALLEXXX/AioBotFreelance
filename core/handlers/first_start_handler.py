@@ -1,12 +1,9 @@
-from pickletools import StackObject
-from re import S
-import aiogram
-from aiogram.types import FSInputFile, InputFile, Message
+from aiogram.types import FSInputFile, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from core.database.models import Course
 from core.keyboards.inline import get_board_for_FS_handler
 from core.database.requests import CourseDAO
-from typing import List, Tuple 
+from typing import List, Tuple
 from aiogram.exceptions import TelegramNetworkError
 
 
@@ -29,21 +26,21 @@ START_MESSAGE = """💵💵💵 КАК ЗАРАБАТЫВАТЬ с компан�
 Оплатить  и получить доступ  
 👇👇👇"""
 
-#/start
+
+# /start
 async def first_user_start_handler(msg: Message) -> None:
 
     course_models: list[Course] = await CourseDAO.get_all_by_params()
     courses_names: List[Tuple[str]] = [(i.name) for i in course_models]
 
-
     key_builder: InlineKeyboardBuilder = get_board_for_FS_handler(courses_names)
-    key_builder.button(text='Вернуться в главное меню ⬅️',
-                        callback_data='return')
+    key_builder.button(text="Вернуться в главное меню ⬅️", callback_data="return")
     key_builder.adjust(1)
 
-    photo = FSInputFile('core/content/images/start_img.jpg')
+    photo = FSInputFile("core/content/images/start_img.jpg")
     try:
-        await msg.answer_photo(photo=photo, caption=START_MESSAGE, reply_markup=key_builder.as_markup())
+        await msg.answer_photo(
+            photo=photo, caption=START_MESSAGE, reply_markup=key_builder.as_markup()
+        )
     except TelegramNetworkError:
         await msg.answer(text=START_MESSAGE, reply_markup=key_builder.as_markup())
-    

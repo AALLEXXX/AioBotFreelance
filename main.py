@@ -2,6 +2,7 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart, Command
+from core.admin.commands.purchases import get_excel_purchases_file
 from core.filters.isadmin import IsAdmin
 from core.admin.commands.admin import admin_panel
 from core.admin.commands.promocode import (
@@ -11,7 +12,7 @@ from core.admin.commands.promocode import (
 )
 from core.admin.commands.user_data_to_excel import get_excel_usersdata_file
 
-from settings import settings
+from config import settings
 from aiogram import F
 
 from core.handlers.basic import get_menu
@@ -59,15 +60,17 @@ from apscheduler_di import ContextSchedulerDecorator
 async def start() -> None:
 
     bot = Bot(token=settings.bots.bot_token)
-    storage = RedisStorage.from_url(f"redis:{settings.REDIS_URL}")
+    storage = RedisStorage.from_url(
+        f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/0"
+    )
     dp = Dispatcher(storage=storage)
     jobstores = {
         "default": RedisJobStore(
             jobs_key="dispatcher_trips_jobs",
             run_times_key="dispatched_trips_running",
-            host="localhost",
+            host=settings.REDIS_HOST,
             db=2,
-            port=6379,
+            port=settings.REDIS_PORT,
         )
     }
     await set_commands(bot)
@@ -96,7 +99,6 @@ async def start() -> None:
         waiting_message_from_user_handler, StepsSupport.GET_USER_QUESTION_MSG
     )
 
-    """-----------------------------------------------------------"""
     # registration
     dp.callback_query.register(
         registration_but_handler, F.data.startswith("start_registration")
@@ -106,11 +108,13 @@ async def start() -> None:
     dp.message.register(handler_user_reg_data, StepsRegister.GET_FULL_NAME)
     dp.message.register(handler_user_reg_data, StepsRegister.GET_PHONE)
 
-    """-----------------------------------------------------------"""
     dp.callback_query.register(check_registration_handler, IsAuth())
     dp.message.register(admin_panel, Command("admin"), IsAdmin())
     dp.message.register(get_promo_command, Command("promo"), IsAdmin())
     dp.message.register(get_excel_usersdata_file, Command("get_users_data"), IsAdmin())
+    dp.message.register(
+        get_excel_purchases_file, Command("get_users_purchases"), IsAdmin()
+    )
     dp.callback_query.register(
         choice_number_promocodes, F.data.startswith("promo_"), IsAdmin()
     )

@@ -121,7 +121,7 @@ class PurchaseDAO(BaseDAO):
             await session.commit()
 
     @classmethod
-    async def get_users_purchases(cls): 
+    async def get_users_purchases(cls):
         """
         select p.purchase_date, p.cost, p.status,
         us.first_name, us.last_name,
@@ -153,6 +153,7 @@ class PurchaseDAO(BaseDAO):
             )
             result = await session.execute(stmt)
             return result.fetchall()
+
 
 class Course_modulesDAO:
     model = Course_module

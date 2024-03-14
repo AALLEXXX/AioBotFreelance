@@ -4,6 +4,7 @@ from aiogram.types import Message
 
 from core.database.requests import UserDAO
 
+
 class IsAdmin(Filter):
     async def __call__(self, msg: Message) -> bool:
         chat_id: int = msg.from_user.id

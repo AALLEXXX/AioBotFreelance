@@ -12,7 +12,7 @@ from core.keyboards.payment_inline import (
 from core.database.requests import PurchaseDAO, UserDAO, CourseDAO
 from core.database.models import Course
 import datetime as dt
-from settings import settings
+from config import settings
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from core.utils.delayed_course_messages import schedule_course_messages
 from aiogram.fsm.context import FSMContext
