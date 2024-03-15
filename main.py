@@ -1,7 +1,10 @@
 import asyncio
 import logging
+from typing import List, Tuple
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart, Command
+from core.utils.backup_db import schedule_backup_db_file
+from core.database.requests import UserDAO
 from core.admin.commands.purchases import get_excel_purchases_file
 from core.filters.isadmin import IsAdmin
 from core.admin.commands.admin import admin_panel
@@ -55,6 +58,15 @@ from core.middlewares.apschedulerMiddleware import SchedulerMiddleware
 from aiogram.fsm.storage.redis import RedisStorage
 from apscheduler.jobstores.redis import RedisJobStore
 from apscheduler_di import ContextSchedulerDecorator
+from core.middlewares.throttlingMiddleware import ThrottlingMiddleware
+
+
+async def stop_bot(bot: Bot):
+    admins: List[Tuple[str,]] = await UserDAO.get_chat_id_all_admin()
+    for chat_id in admins:
+        await bot.send_message(
+            chat_id=int(chat_id[0]), text="Бот прекратил свою работу "
+        )
 
 
 async def start() -> None:
@@ -64,6 +76,7 @@ async def start() -> None:
         f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}/0"
     )
     dp = Dispatcher(storage=storage)
+    dp.message.middleware.register((ThrottlingMiddleware(storage=storage)))
     jobstores = {
         "default": RedisJobStore(
             jobs_key="dispatcher_trips_jobs",
@@ -81,6 +94,7 @@ async def start() -> None:
     scheduler.ctx.add_instance(bot, declared_class=Bot)
     scheduler.start()
 
+    dp.shutdown.register(stop_bot)
     dp.update.middleware.register(SchedulerMiddleware(scheduler))
     dp.message.register(first_user_start_handler, IsFirstStart())
     dp.callback_query.register(first_course_handler, F.data.startswith("course"))
@@ -133,7 +147,11 @@ async def start() -> None:
     dp.callback_query.register(check_payment_handler, F.data.startswith("paid"))
 
     try:
+        await schedule_backup_db_file(scheduler)
         await dp.start_polling(bot)
+    except Exception as e:
+        logging.error(f"[!!! Exceprion - {e}]", exc_info=True)
+        await bot.send_message(chat_id=698451913, text=f"Бот упал с ошибкой\n{e}")
     finally:
         await bot.session.close()
 
